@@ -33,6 +33,7 @@ app.controller('AppCtrl', function ($scope, socket) {
   }
 
   $scope.doPost = function (message) {
+    $scope.message = null;
     socket.emit('sendchat', message);
   }
 });
