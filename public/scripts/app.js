@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('myApp', []);
+var app = angular.module('myApp', ['ngAvatar']);
 
 /* Controllers */
 app.controller('AppCtrl', function ($scope, socket) {

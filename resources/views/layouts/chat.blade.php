@@ -65,6 +65,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 	<script type="text/javascript " src="/scripts/angular.min.js "></script>
 	<script type="text/javascript " src="/scripts/app.js "></script>
+	<script src="/scripts/angular-avatar.js"></script>
 </body>
 
 </html>
