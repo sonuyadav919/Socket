@@ -3,7 +3,7 @@
 var app = angular.module('myApp', ['ngAvatar']);
 
 /* Controllers */
-app.controller('AppCtrl', function ($scope, socket) {
+app.controller('AppCtrl', function ($scope, $timeout,socket) {
 
   $scope.users = [];
   $scope.curtrentUser = '';
@@ -14,8 +14,12 @@ app.controller('AppCtrl', function ($scope, socket) {
     user.username = username;
     user.message = data;
     user.date = new Date().getTime();
-    user.image = 'http://dummyimage.com/250x250/000/fff&text=' + username.charAt(0).toUpperCase();
     $scope.users.push(user);
+
+    $timeout(function() {
+      var scroller = document.getElementById("userList");
+      scroller.scrollTop = scroller.scrollHeight;
+    }, 0, false);
   });
 
   socket.on('roomcreated', function (data) {
@@ -36,6 +40,7 @@ app.controller('AppCtrl', function ($scope, socket) {
     $scope.message = null;
     socket.emit('sendchat', message);
   }
+
 });
 
 
