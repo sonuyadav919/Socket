@@ -27,7 +27,6 @@
                             </div>
                           </div>
                         </div>
-                        <h2 class="text-center ">Got something to say?</h2>
                         <div class="input-group">
                           <input id="data " type="text " ng-model="message " class="form-control " placeholder="Type your message here ">
                           <span class="input-group-btn ">
