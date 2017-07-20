@@ -15,7 +15,7 @@
                           <div ng-repeat="user in users" class="col-sm-12 ng-scope">
                             <div class="row" ng-if="user">
                               <div class="col-xs-2"  ng-class="{'col-xs-push-10' : (user.username == curtrentUser)}">
-                                <ng-avatar initials="@{{user.username.charAt(0).toUpperCase()}}" corner-radius="7" bg-color="#3875d7" ></ng-avatar>
+                                <ng-avatar initials="@{{user.username.charAt(0).toUpperCase()}}" corner-radius="7" auto-color="true"></ng-avatar>
                               </div>
                               <div class="col-xs-10" ng-class="{'col-xs-pull-2' : (user.username == curtrentUser)}">
                                 <div class="panel panel-default ">

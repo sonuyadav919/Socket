@@ -2,15 +2,17 @@
       background-color: #eee;
       color: #444;
     }
-    
+
     .fa {
       color: #fff;
     }
-    
+
     #userList {
       display: none;
+      height: 400px;
+      overflow-y: auto;
     }
-    
+
     #loader {
       position: absolute;
       z-index: 2;
