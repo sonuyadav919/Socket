@@ -53,4 +53,27 @@ io.sockets.on('connection', function (socket) {
             socket.leave(socket.room);
         }
     });
+
+    socket.on('privateroom', function (data) {
+        rooms.push(roomid);
+        socket.emit('updatechat', 'SERVER', 'You are start chatting with:' + username);
+    });
+
+
+    socket.on('privatechat', function (data) {
+      var username = data.username;
+      var room = data.room;
+
+        if (rooms.indexOf(room) != -1) {
+            socket.username = username;
+            socket.room = room;
+            usernames[username] = username;
+            socket.join(room);
+            socket.emit('updatechat', 'SERVER', 'You are connected. Start chatting');
+            socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected to private chat room');
+        } else {
+          rooms.push(room);
+          socket.emit('updatechat', 'SERVER', 'You are start chatting with:' + username);
+        }
+    });
 });

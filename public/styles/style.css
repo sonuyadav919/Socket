@@ -20,3 +20,9 @@
       text-align: center;
       top: 40%;
     }
+
+
+    .usersList {
+      height: 450px;
+      overflow-y: auto;
+    }

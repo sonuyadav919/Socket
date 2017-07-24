@@ -32,6 +32,7 @@ app.controller('AppCtrl', function ($scope, $timeout,socket) {
   }
 
   $scope.joinRoom = function (data) {
+
     $scope.curtrentUser = data.username;
     socket.emit('adduser', data);
   }
@@ -40,6 +41,13 @@ app.controller('AppCtrl', function ($scope, $timeout,socket) {
     $scope.message = null;
     socket.emit('sendchat', message);
   }
+
+  $scope.startPrivateChat = function (data) {
+    data = angular.fromJson(data);
+    $scope.curtrentUser = data.username;
+    socket.emit('privatechat', data);
+  }
+
 
 });
 

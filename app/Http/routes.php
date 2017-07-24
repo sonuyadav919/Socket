@@ -17,4 +17,7 @@ Route::get('/', function () {
 
 Route::auth();
 
-Route::get('/home', 'HomeController@index');
+Route::group(['prefix' => 'home','middleware' => 'auth'], function(){
+  Route::get('/', 'HomeController@index');
+  Route::get('private', 'HomeController@privateChat');
+});

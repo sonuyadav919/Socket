@@ -1,4 +1,14 @@
 @extends('layouts.chat')
+@section('extra_style')
+<style>
+.avatar-wrapper {
+  float: left;
+  margin-right: 5px;
+}
+</style>
+
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row">
@@ -41,29 +51,22 @@
                 </div>
             </div>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 usersList" >
 
+            <h4> Users List </h4>
 
-              <h4>Join Room</h4>
-              <div class="form-group ">
-                <label for="exampleInputEmail1 ">Your Name</label>
-                <input type="text " ng-model="join.username " class="form-control " id="join_room_email" placeholder="Enter Name " />
-              </div>
-              <div class="form-group ">
-                <label for="exampleInputEmail1 ">Room Code</label>
-                <input type="text " ng-model="join.room " class="form-control " id="join_room_code " placeholder="Enter Room Code " />
-              </div>
-              <button type="submit " id="join " ng-click="joinRoom(join) " class="btn btn-default ">Submit</button>
-              <hr>
-              <h4>Create Room</h4>
-              <div class="form-group ">
-                <label for="exampleInputEmail1 ">Your Name</label>
-                <input type="text " ng-model="create.username " class="form-control " id="create_room_email " placeholder="Enter Name " />
-              </div>
-              <button type="submit " id="create " ng-click="createRoom(create) " class="btn btn-default ">Submit</button>
+            <ul class="list-group">
+              @foreach($users as $user)
+                <?php $object = ['room' => $user->id+$authId, 'username' => $user->name]; ?>
+                <li class="list-group-item" ng-click="startPrivateChat({{json_encode($object)}})">
+                    <ng-avatar initials="{{strtoupper(substr($user->name,0,1))}}" corner-radius="7" auto-color="true" width="25"></ng-avatar>
+                    <span>{{$user->name}}</span>
+                    <span class="badge">12</span>
+                 </li>
+              @endforeach
+            </ul>
+
               <div class="clearfix "></div>
-
-
           </div>
         </div>
     </div>
