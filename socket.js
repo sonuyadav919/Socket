@@ -1,12 +1,21 @@
 var express = require('express');
-
 var app = express();
 app.set('port', process.env.PORT || 9000);
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = app.get('port');
-
 app.use(express.static('public'));
+
+var mysql     =     require("mysql");
+
+/* Creating MySQL connection.*/
+var connection    =    mysql.createPool({
+      host              :   'localhost',
+      user              :   'root',
+      password          :   'admin',
+      database          :   'socket',
+      debug             :   false
+});
 
 server.listen(port, function () {
     console.log("Server listening on: http://localhost:%s", port);
@@ -45,6 +54,15 @@ io.sockets.on('connection', function (socket) {
         io.sockets.in(socket.room).emit('updatechat', socket.username, data);
     });
 
+    socket.on('sendprivatechat', function (data) {
+        var recever = socket.room - data.sender_id;
+        data.recever_id = recever;
+
+        store_message(data,function(res){});
+
+        io.sockets.in(socket.room).emit('updatechat', socket.username, data.message);
+    });
+
     socket.on('disconnect', function () {
         delete usernames[socket.username];
         io.sockets.emit('updateusers', usernames);
@@ -69,11 +87,69 @@ io.sockets.on('connection', function (socket) {
             socket.room = room;
             usernames[username] = username;
             socket.join(room);
-            socket.emit('updatechat', 'SERVER', 'You are connected. Start chatting');
+            socket.emit('updatechat', 'SERVER', 'You are connected with '+ username +'. Start chatting...');
             socket.broadcast.to(room).emit('updatechat', 'SERVER', username + ' has connected to private chat room');
         } else {
           rooms.push(room);
-          socket.emit('updatechat', 'SERVER', 'You are start chatting with:' + username);
+          socket.emit('updatechat', 'SERVER', 'You are connected with '+ username +'. Start chatting...');
         }
+        old_messages(data,function(res){});
     });
+
+    socket.on('appendmessages', function (data) {
+      io.sockets.in(data.room).emit('updatechat', socket.username, data.rows.length);
+      for (var i=0; i<data.rows.length; i++) {
+        io.sockets.in(data.room).emit('updatechat', socket.username, data.rows.message);
+      }
+    });
+
+
+
+    var store_message  = function (data,callback) {
+        connection.getConnection(function(err,connection){
+            if (err) {
+              callback(false);
+              return;
+            }
+        connection.query("INSERT INTO `private_chats` (`sender_id`, `recever_id`, `message`) VALUES ('"+data.sender_id+"', '"+data.recever_id+"', '"+data.message+"')",function(err,rows){
+                connection.release();
+                if(!err) {
+                  callback(true);
+                }
+            });
+         connection.on('error', function(err) {
+                  callback(false);
+                  return;
+            });
+        });
+    }
+
+    var old_messages = function(data, callback){
+      connection.getConnection(function(err,connection){
+          if (err) {
+            callback(false);
+            return;
+          }
+      connection.query("SELECT * FROM `private_chats` WHERE `sender_id` = '"+data.sender_id+"' AND recever_id = '"+data.recever_id+"'",function(err,rows){
+            var results = {'rows':rows, 'room':data.room};
+
+console.log(data);
+console.log(results);
+
+            socket.emit('appendmessages', results);
+
+              if(!err) {
+                callback(true);
+              }
+
+
+          });
+       connection.on('error', function(err) {
+                callback(false);
+                return;
+          });
+      });
+    }
+
+
 });

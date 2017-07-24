@@ -48,6 +48,13 @@ app.controller('AppCtrl', function ($scope, $timeout,socket) {
     socket.emit('privatechat', data);
   }
 
+  $scope.privateChat = function (message, sender) {
+    $scope.message = null;
+    var data = {'sender_id': sender, 'message':message};
+
+    socket.emit('sendprivatechat', data);
+  }
+
 
 });
 

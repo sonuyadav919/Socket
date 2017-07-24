@@ -37,9 +37,9 @@
                           </div>
                         </div>
                         <div class="input-group">
-                          <input id="data " type="text " ng-model="message " class="form-control " placeholder="Type your message here ">
+                          <input id="data " type="text " ng-model="message" class="form-control " placeholder="Type your message here ">
                           <span class="input-group-btn ">
-                            <button class="btn btn-primary " id="datasend " type="button " ng-click="doPost(message) ">Send!</button>
+                            <button class="btn btn-primary " id="datasend " type="button " ng-click="privateChat(message,{{$authId}}) ">Send!</button>
                           </span>
                         </div>
                         <div class="clearfix "></div>
@@ -57,7 +57,7 @@
 
             <ul class="list-group">
               @foreach($users as $user)
-                <?php $object = ['room' => $user->id+$authId, 'username' => $user->name]; ?>
+                <?php $object = ['room' => $user->id+$authId, 'username' => $user->name, 'sender_id' => $authId, 'recever_id' => $user->id]; ?>
                 <li class="list-group-item" ng-click="startPrivateChat({{json_encode($object)}})">
                     <ng-avatar initials="{{strtoupper(substr($user->name,0,1))}}" corner-radius="7" auto-color="true" width="25"></ng-avatar>
                     <span>{{$user->name}}</span>
