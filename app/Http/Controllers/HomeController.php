@@ -6,6 +6,7 @@ use App\Http\Requests;
 use Illuminate\Http\Request;
 use App\User;
 use Auth;
+use App\Models\PrivateChat;
 
 class HomeController extends Controller
 {
@@ -35,5 +36,13 @@ class HomeController extends Controller
         $data['authId'] = Auth::id();
 
         return view('chats.private', $data);
+    }
+
+    public function privateMessages($receverId)
+    {
+        return PrivateChat::where(['sender_id' => Auth::id(), 'recever_id' => $receverId])
+                            ->orWhere(['sender_id' => $receverId, 'recever_id' => Auth::id()])
+                            ->with(['sender', 'recever'])
+                            ->get();
     }
 }

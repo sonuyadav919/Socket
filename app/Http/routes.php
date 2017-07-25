@@ -20,4 +20,6 @@ Route::auth();
 Route::group(['prefix' => 'home','middleware' => 'auth'], function(){
   Route::get('/', 'HomeController@index');
   Route::get('private', 'HomeController@privateChat');
+  Route::get('private-messages/{recever}', 'HomeController@privateMessages');
+
 });

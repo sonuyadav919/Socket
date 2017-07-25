@@ -93,7 +93,7 @@ io.sockets.on('connection', function (socket) {
           rooms.push(room);
           socket.emit('updatechat', 'SERVER', 'You are connected with '+ username +'. Start chatting...');
         }
-        old_messages(data,function(res){});
+        // old_messages(data,function(res){});
     });
 
     socket.on('appendmessages', function (data) {
@@ -130,20 +130,19 @@ io.sockets.on('connection', function (socket) {
             callback(false);
             return;
           }
-      connection.query("SELECT * FROM `private_chats` WHERE `sender_id` = '"+data.sender_id+"' AND recever_id = '"+data.recever_id+"'",function(err,rows){
-            var results = {'rows':rows, 'room':data.room};
+      connection.query("SELECT private_chats.*, sender.name as sender_name, recever.name as recever_name FROM private_chats JOIN users as sender ON private_chats.sender_id = sender.id JOIN users as recever ON private_chats.recever_id = recever.id WHERE (private_chats.sender_id = '"+data.sender_id+"' AND private_chats.recever_id = '"+data.recever_id+"') OR (private_chats.sender_id = '"+data.recever_id+"' AND private_chats.recever_id = '"+data.sender_id+"')")
+                .on('result', function(rows){
+                  // console.log(data);
+                  // console.log(rows);
+                  var username = '';
+                  if(rows.sender_id ==  data.sender_id)
+                    username = rows.sender_name;
+                  else
+                    username = rows.recever_name;
 
-console.log(data);
-console.log(results);
+                  io.sockets.in(data.room).emit('updatechat', username, rows.message);
+                });
 
-            socket.emit('appendmessages', results);
-
-              if(!err) {
-                callback(true);
-              }
-
-
-          });
        connection.on('error', function(err) {
                 callback(false);
                 return;

@@ -57,7 +57,7 @@
 
             <ul class="list-group">
               @foreach($users as $user)
-                <?php $object = ['room' => $user->id+$authId, 'username' => $user->name, 'sender_id' => $authId, 'recever_id' => $user->id]; ?>
+                <?php $object = ['room' => $user->id+$authId, 'username' => Auth::user()->name, 'sender_id' => $authId, 'recever_id' => $user->id]; ?>
                 <li class="list-group-item" ng-click="startPrivateChat({{json_encode($object)}})">
                     <ng-avatar initials="{{strtoupper(substr($user->name,0,1))}}" corner-radius="7" auto-color="true" width="25"></ng-avatar>
                     <span>{{$user->name}}</span>

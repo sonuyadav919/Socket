@@ -45,6 +45,11 @@ app.controller('AppCtrl', function ($scope, $timeout,socket) {
   $scope.startPrivateChat = function (data) {
     data = angular.fromJson(data);
     $scope.curtrentUser = data.username;
+    socket.getMessages(data.recever_id)
+          .success(function(rows) {
+              console.log(rows);
+          });
+
     socket.emit('privatechat', data);
   }
 
@@ -60,7 +65,7 @@ app.controller('AppCtrl', function ($scope, $timeout,socket) {
 
 
 /* Services */
-app.factory('socket', function ($rootScope) {
+app.factory('socket', ['$rootScope', '$http', function ($rootScope, $http) {
   var socket = io.connect('http://localhost:9000');
 
   return {
@@ -81,6 +86,11 @@ app.factory('socket', function ($rootScope) {
           }
         });
       })
-    }
+    },
+    getMessages : function(recever) {
+      return $http.get('/home/private-messages/'+recever);
+    },
+
+
   };
-});
+}]);
