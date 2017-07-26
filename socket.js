@@ -57,7 +57,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('sendprivatechat', function (data) {
         var recever = socket.room - data.sender_id;
         data.recever_id = recever;
-
         store_message(data,function(res){});
 
         io.sockets.in(socket.room).emit('updatechat', socket.username, data.message);
@@ -81,7 +80,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('privatechat', function (data) {
       var username = data.username;
       var room = data.room;
-
         if (rooms.indexOf(room) != -1) {
             socket.username = username;
             socket.room = room;
@@ -93,13 +91,14 @@ io.sockets.on('connection', function (socket) {
           rooms.push(room);
           socket.emit('updatechat', 'SERVER', 'You are connected with '+ username +'. Start chatting...');
         }
-        // old_messages(data,function(res){});
     });
 
     socket.on('appendmessages', function (data) {
-      io.sockets.in(data.room).emit('updatechat', socket.username, data.rows.length);
-      for (var i=0; i<data.rows.length; i++) {
-        io.sockets.in(data.room).emit('updatechat', socket.username, data.rows.message);
+      if(data.roomdata.sender_id == data.row.sender_id){
+        socket.emit('appendchat', data.roomdata.username, data.row);
+      }
+      else if(data.roomdata.recever_id == data.row.sender_id){
+        socket.emit('appendchat', data.row.sender.name, data.row);
       }
     });
 
@@ -111,7 +110,7 @@ io.sockets.on('connection', function (socket) {
               callback(false);
               return;
             }
-        connection.query("INSERT INTO `private_chats` (`sender_id`, `recever_id`, `message`) VALUES ('"+data.sender_id+"', '"+data.recever_id+"', '"+data.message+"')",function(err,rows){
+        connection.query("INSERT INTO `private_chats` (`sender_id`, `recever_id`, `message`, `created_at`, `updated_at`) VALUES ('"+data.sender_id+"', '"+data.recever_id+"', '"+data.message+"', current_timestamp,current_timestamp)",function(err,rows){
                 connection.release();
                 if(!err) {
                   callback(true);

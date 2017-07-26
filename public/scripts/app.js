@@ -45,20 +45,39 @@ app.controller('AppCtrl', function ($scope, $timeout,socket) {
   $scope.startPrivateChat = function (data) {
     data = angular.fromJson(data);
     $scope.curtrentUser = data.username;
+    socket.emit('privatechat', data);
+
     socket.getMessages(data.recever_id)
           .success(function(rows) {
-              console.log(rows);
-          });
 
-    socket.emit('privatechat', data);
+            angular.forEach(rows, function(row, key){
+              var newdata = {'roomdata':data, 'row':row};
+              socket.emit('appendmessages', newdata);
+            });
+              // console.log(rows);
+          });
   }
 
-  $scope.privateChat = function (message, sender) {
+  $scope.privateChat = function (message, sender, room) {
     $scope.message = null;
     var data = {'sender_id': sender, 'message':message};
 
     socket.emit('sendprivatechat', data);
   }
+
+  socket.on('appendchat', function (username, data) {
+    var user = {};
+    user.username = username;
+    user.message = data.message;
+    var date = new Date(data.created_at)
+    user.date = date.getTime();
+    $scope.users.push(user);
+
+    $timeout(function() {
+      var scroller = document.getElementById("userList");
+      scroller.scrollTop = scroller.scrollHeight;
+    }, 0, false);
+  });
 
 
 });
